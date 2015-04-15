@@ -4,6 +4,18 @@ import pickle
 import logging
 
 
+class SessionException(Exception):
+    pass
+
+
+class SessionNotLoaded(SessionException):
+    pass
+
+
+class SessionDataNotExist(SessionException):
+    pass
+
+
 class Session(object):
     __slots__ = ("_store", "_sessionid", "_data", "_loaded")
 
@@ -34,8 +46,20 @@ class Session(object):
         self._loaded = True
         return self
 
-    def clear(self, sessionid):
-        rtn = self._store.clear(sessionid)
+    @property
+    def loaded(self):
+        return self._loaded
+
+    @loaded.setter
+    def loaded(self, value):
+        self._loaded = value
+
+    def clear(self, sessionid=None):
+        if self.loaded:
+            rtn = self._store.clear(sessionid or self.sessionid)
+        else:
+            logging.error("Session not loaded, can not be clear")
+            raise SessionNotLoaded("Session can not be clear before loaded")
         return rtn
 
     def get(self, name, default=None):
@@ -61,10 +85,6 @@ class Session(object):
 
     def __delattr__(self, name):
         self._data.__delattr__(name)
-
-
-class SessionDataNotExist(Exception):
-    pass
 
 
 class SessionStore(object):

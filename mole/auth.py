@@ -24,6 +24,15 @@ def login(request, user, password, expires_day=None):
         return False
 
 
+def logout(request):
+    logging.debug("User [{0}] try to logout".format(request.current_user))
+
+    session = request.session
+    session.clear()
+    # request.clear_cookie("sessionid")
+    return True
+
+
 def verify_user(username, password, usermodel):
     try:
         user = usermodel.get(
