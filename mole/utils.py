@@ -55,16 +55,16 @@ def find_subclass(cls):
 
 def find_modelclass(ModelClass):
     proj_path = sys.path[0]
-    model_path = os.path.join(proj_path, "model")
+    model_path = os.path.join(proj_path, "models")
 
     model_class = [s.split(".")[0] for s in os.listdir(model_path)
                    if not s.startswith("__") and s.endswith("py")]
     for m in model_class:
-        __import__("model." + m)
+        __import__("models." + m)
 
     sub_class = ModelClass.__subclasses__()
     return sub_class
 
 
 if __name__ == "__main__":
-    print(encrypt_password(1))
+    print(encrypt_password("c4ca4238a0b923820dcc509a6f75849b"))
