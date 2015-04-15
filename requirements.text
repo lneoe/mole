@@ -2,3 +2,4 @@ tornado
 redis
 peewee
 jinja2
+wtform
