@@ -1,6 +1,8 @@
 # coding: utf-8
 
 from wtforms import Form as WTForm
+from wtforms import StringField
+from wtforms.widgets import Input as InputWidget
 from tornado import locale
 
 
@@ -67,3 +69,11 @@ class TornadoLocaleWrapper(object):
 
     def ngettext(self, message, plural_message, count):
         return self.locale.translate(message, plural_message, count)
+
+
+class EmailWidget(InputWidget):
+    input_type = "email"
+
+
+class EmailField(StringField):
+    widget = EmailWidget()
