@@ -2,6 +2,7 @@
 
 from wtforms import Form as WTForm
 from wtforms import StringField
+from wtforms.validators import HostnameValidation, ValidationError
 from wtforms.widgets import Input as InputWidget
 from tornado import locale
 
@@ -77,3 +78,25 @@ class EmailWidget(InputWidget):
 
 class EmailField(StringField):
     widget = EmailWidget()
+
+
+class HostName(object):
+
+    """
+    hostname validator
+    """
+
+    def __init__(self, require_tld=True, allow_ip=False, message=None):
+        self.message = message
+        self.validate_hostname = HostnameValidation(
+            require_tld=require_tld,
+            allow_ip=allow_ip,
+        )
+
+    def __call__(self, form, field):
+        message = self.message
+        if message is None:
+            message = field.gettext("Invalid hostname.")
+
+        if not self.validate_hostname(field.data):
+            raise ValidationError(message)

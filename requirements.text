@@ -3,4 +3,4 @@ redis
 pymysql
 peewee
 jinja2
-wtform
+wtforms
