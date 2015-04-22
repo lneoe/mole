@@ -16,7 +16,7 @@ class Application(tornado.web.Application):
         """
         registed jinja templates engine
         """
-        templates_path = kwargs.get("templates_path", "templates")
+        templates_path = kwargs.get("template_path", "templates")
         settings = dict(
             jinja=Environment(loader=FileSystemLoader(templates_path)),
         )
