@@ -2,43 +2,28 @@
 
 import os
 import sys
-import uuid
-import hashlib
-import base64
+# import uuid
+# import hashlib
+# import base64
 import datetime
 import time
 
+from passlib.hash import pbkdf2_sha256
+
 
 def encrypt_password(password):
-    salt = uuid.uuid4().bytes
     try:
         update_time = datetime.datetime.utcnow().timestamp()
     except Exception:
         update_time = time.mktime(time.gmtime())
 
-    update_time = str(update_time)
-    password = str(password)
-
-    # python2 python3 complex
-    try:
-        password_bytes = bytes(password)
-        update_time = bytes(update_time)
-    except TypeError:
-        password_bytes = bytes(password, "utf-8")
-        update_time = bytes(update_time, "utf-8")
-
-    pw_salt = password_bytes + salt
-    hash_pw = hashlib.sha1(pw_salt).digest()
-
-    # not realy need for b64encode
-    secret = base64.b64encode(hash_pw + b'|' + salt + b"|" + update_time)
-
-    return secret
+    secret = pbkdf2_sha256.encrypt(password)
+    return secret + '$$' + str(update_time)
 
 
-def decrypt_password(secret):
-    pw_salt, salt, update_time = base64.b64decode(secret).split(b'|')
-    return pw_salt, salt, update_time
+def verify_password(raw_password, hashed):
+    _hash, update_time = hashed.split("$$")
+    return pbkdf2_sha256.verify(raw_password, _hash)
 
 
 def set_password(user, password_hash, commit=True):
@@ -67,4 +52,6 @@ def find_modelclass(ModelClass):
 
 
 if __name__ == "__main__":
-    print(encrypt_password("c4ca4238a0b923820dcc509a6f75849b"))
+    _hash = encrypt_password("c4ca4238a0b923820dcc509a6f75849b")
+    print(_hash)
+    print(verify_password("c4ca4238a0b923820dcc509a6f75849b", _hash))
