@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import logging
 from peewee import (Proxy,
                     Model,
                     MySQLDatabase,
@@ -10,10 +11,12 @@ db_proxy = Proxy()
 
 
 def before_request_handler():
+    logging.debug("before_request_handler run db_proxy.connect()")
     db_proxy.connect()
 
 
 def after_request_handler():
+    logging.debug("after_request_handler run db_proxy.close()")
     db_proxy.close()
 
 
@@ -68,3 +71,7 @@ class BaseModel(Model):
 
     class Meta:
         database = db_proxy
+
+
+db_conn = before_request_handler
+db_close = after_request_handler

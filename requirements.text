@@ -4,3 +4,4 @@ pymysql
 peewee
 jinja2
 wtforms
+passlib

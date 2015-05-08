@@ -19,9 +19,11 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         self.jinja.globals.update(self.get_template_namespace())
 
     def initialize(self):
+        logging.debug("Connect database on handler initialize")
         db_connect()
 
     def on_finish(self):
+        logging.debug("Close database connection on handler finish!")
         db_close()
 
     # def prepare(self):
