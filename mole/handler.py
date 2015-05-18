@@ -75,6 +75,11 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         render and response json message with given str or iterable dict
         """
         self.set_header('Content-Type', 'application/json')
+
+        settings = self.application.settings
+        if settings.get("xsrf_cookies", False):
+            self.xsrf_form_html()
+
         if not isinstance(json_str, str):
             json_str = json_encode(json_str)
         self.finish(json_str)
@@ -97,5 +102,8 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         """
         render template with given context
         """
+        settings = self.application.settings
+        if settings.get("xsrf_cookies", False):
+            self.xsrf_form_html()
         html = self.render_string(template_name, **context)
         self.finish(html)
