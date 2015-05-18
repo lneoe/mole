@@ -14,10 +14,14 @@ def before_request_handler():
     logging.debug("before_request_handler run db_proxy.connect()")
     db_proxy.connect()
 
+db_conn = before_request_handler
+
 
 def after_request_handler():
     logging.debug("after_request_handler run db_proxy.close()")
     db_proxy.close()
+
+db_close = after_request_handler
 
 
 def use_mysql_database(config):
@@ -72,6 +76,10 @@ class BaseModel(Model):
     class Meta:
         database = db_proxy
 
+    @property.getter
+    def pk(self):
+        return self.get_id()
 
-db_conn = before_request_handler
-db_close = after_request_handler
+    @property.setter
+    def pk(self, value):
+        return self.set_id(value)
