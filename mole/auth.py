@@ -2,8 +2,14 @@
 
 import logging
 import hashlib
+import time
+import datetime
+import hashlib
+import hmac
 
-from .utils import verify_password
+from mole.utils import (verify_password,
+                        base36decode,
+                        base36encode)
 
 
 def login(request, user, password, expires_day=None):
@@ -48,3 +54,34 @@ def verify_user(username, password, usermodel):
         else:
             logging.debug("User check_password faild.")
             return None
+
+
+class PasswordResetTokenGenerator(object):
+
+    def __init__(self, secret='secret'):
+        self.secret = str(secret).encode('utf-8')
+
+    def make_token(self, user):
+        ts = int(datetime.datetime.today().timestamp())
+        # ts_b36 = base36encode(ts)
+        return self._make_token(user, ts)
+
+    def check_token(self, user, token):
+        ts_b36, _hash = token.split("-")
+
+        ts = base36decode(ts_b36)
+
+        # Todo: more job need, a function like Django's
+        # constant_time_compare(val1, val2)
+        return token == self._make_token(user, ts)
+
+    def _make_token(self, user, timestamp):
+        ts_b36 = base36encode(timestamp)
+
+        key_salt = hashlib.sha1(self.secret).digest()
+
+        value = (str(user.pk) + user.password).encode('utf-8')
+
+        _hash = hmac.new(key=key_salt, msg=value,
+                         digestmod=hashlib.sha1).hexdigest()
+        return "{0}-{1}".format(ts_b36, _hash)
