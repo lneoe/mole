@@ -76,10 +76,10 @@ class BaseModel(Model):
     class Meta:
         database = db_proxy
 
-    @property.getter
+    @property
     def pk(self):
         return self.get_id()
 
-    @property.setter
+    @pk.setter
     def pk(self, value):
         return self.set_id(value)
