@@ -104,6 +104,7 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         """
         settings = self.application.settings
         if settings.get("xsrf_cookies", False):
-            self.xsrf_form_html()
+            # self.xsrf_form_html()
+            self.xsrf_token
         html = self.render_string(template_name, **context)
         self.finish(html)

@@ -67,7 +67,11 @@ class PasswordResetTokenGenerator(object):
         return self._make_token(user, ts)
 
     def check_token(self, user, token):
-        ts_b36, _hash = token.split("-")
+        try:
+            ts_b36, _hash = token.split("-")
+        except ValueError as e:
+            logging.debug(e)
+            return False
 
         ts = base36decode(ts_b36)
 
