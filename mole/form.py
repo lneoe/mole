@@ -49,6 +49,7 @@ class Form(WTForm):
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
         self._locale_code = kwargs.get("locale", "en_US")
+        self.request = kwargs.pop("request", None)
         super(Form, self).__init__(formdata, obj, prefix, **kwargs)
 
     def _get_translations(self):
