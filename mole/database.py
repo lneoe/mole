@@ -5,7 +5,7 @@ from peewee import (Proxy,
                     Model,
                     MySQLDatabase,
                     PostgresqlDatabase)
-from playhouse.pool import PooledMySQLDatabase
+from playhouse.pool import PooledMySQLDatabase, PooledPostgresqlExtDatabase
 
 db_proxy = Proxy()
 
@@ -69,6 +69,20 @@ def use_pgsql_database(config):
         password=config.PGSQL.get("PASSWORD"),
     )
     db_proxy.initialize(pgsql_db)
+
+
+def use_pgsql_database_with_pool(config, max_connections=20,
+                                 stale_timeout=300):
+    pgsql_db = PooledPostgresqlExtDatabase(
+        max_connections=max_connections,
+        stale_timeout=stale_timeout,
+        database=config.PGSQL.get("DATABASE"),
+        host=config.PGSQL.get("HOST"),
+        port=config.PGSQL.get("PORT"),
+        user=config.PGSQL.get("USER"),
+        password=config.PGSQL.get("PASSWORD"),
+    )
+    return db_proxy.initialize(pgsql_db)
 
 
 class BaseModel(Model):
